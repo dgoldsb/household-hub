@@ -4,7 +4,7 @@ CREATE TABLE housemates
     first_name VARCHAR(50) NOT NULL,
     last_name VARCHAR(50) NOT NULL,
     active BIT NOT NULL,
-    phone BIGINT
+    phone VARCHAR(50)
 );
 CREATE TABLE chores
 (
