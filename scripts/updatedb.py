@@ -3,6 +3,7 @@ Update the database, weekly or daily cronjob
 Done in Python because SQL server has stuff that I wanted to use, and SQLite does not have it
 '''
 
+import subprocess
 import csv
 import sqlite3
 
@@ -35,9 +36,6 @@ def updatedb():
 
     curs.execute('SELECT DISTINCT CID FROM chores')
     jobs = curs.fetchall()
-
-    curs.execute('SELECT DISTINCT UID FROM housemates')
-    housemates = curs.fetchall()
 
     # Create counting table
     job = "INSERT INTO chores_unplanned SELECT UID, CID,"\
@@ -78,10 +76,35 @@ def updatedb():
     conn.commit()
     return 0
 
-def sendalert(parent, theirs, recipient):
+def sendalert(parent, address, recipient):
     '''
     Sends alerts to someone with a chore coming up the next day
     '''
+    message = "Yo "+recipient+", vergeet niet dat je dit moet gaan doen (zie titel)"
+    debug = subprocess.check_output(['mail', '-s', parent, address, '<<<', message])
+
+    return debug
+
+def findalerts():
+    '''
+    Send all alerts
+    '''
+    conn = sqlite3.connect('hub.db')
+    conn.text_factory = str
+    curs = conn.cursor()
+
+    # Send reminders for chores
+    job = "SELECT c.chore, b.first_name, b.email FROM (SELECT * FROM chorelog "\
+          "WHERE date_todo == DATE('now', '+1 day') AND finished = 0) as a"\
+          "LEFT JOIN (SELECT * FROM housemates) as b ON a.UID = b.UID "\
+          "LEFT JOIN (SELECT * FROM chores) as c ON a.CID = c.CID"
+    curs.execute(job)
+    reminders = curs.fetchall()
+    for reminder in reminders:
+        print('Sending reminder to %s (%s) about %s...' % reminder)
+        sendalert(reminder[0], reminder[2], reminder[1])
+
+    # TODO: Send reminders for reminders
 
     return 0
 
@@ -90,7 +113,7 @@ def main():
     Calls all parts of the update
     '''
     updatedb()
-    sendalerts()
+    findalerts()
 
 if __name__ == "__main__":
     main()
