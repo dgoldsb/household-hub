@@ -1,29 +1,29 @@
 INSERT INTO housemates
-(UID, first_name, last_name, active, email)
+(UID, first_name, last_name, active, phone)
 VALUES
-(1, 'Dylan', 'Goldsborough', 1, 'dgoldsb@live.nl');
+(1, 'Dylan', 'Goldsborough', 1, '620033224');
 INSERT INTO housemates
-(UID, first_name, last_name, active, email)
+(UID, first_name, last_name, active, phone)
 VALUES
 (2, 'Coen', 'Balkestein', 1, NULL);
 INSERT INTO housemates
-(UID, first_name, last_name, active, email)
+(UID, first_name, last_name, active, phone)
 VALUES
 (3, 'Beau', 'Schaepman', 1, NULL);
 INSERT INTO housemates
-(UID, first_name, last_name, active, email)
+(UID, first_name, last_name, active, phone)
 VALUES
 (4, 'Lars', 'van Esveld', 1, NULL);
 INSERT INTO housemates
-(UID, first_name, last_name, active, email)
+(UID, first_name, last_name, active, phone)
 VALUES
 (5, 'Wijnand', 'Schellekens', 1, NULL);
 INSERT INTO housemates
-(UID, first_name, last_name, active, email)
+(UID, first_name, last_name, active, phone)
 VALUES
 (6, 'Silver', 'Huber', 1, NULL);
 INSERT INTO housemates
-(UID, first_name, last_name, active, email)
+(UID, first_name, last_name, active, phone)
 VALUES
 (7, 'Mike', 'Dörner', 1, NULL);
 INSERT INTO chores

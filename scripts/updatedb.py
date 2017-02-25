@@ -3,7 +3,9 @@ Update the database, weekly or daily cronjob
 Done in Python because SQL server has stuff that I wanted to use, and SQLite does not have it
 '''
 
+import csv
 import sqlite3
+from twilio.rest import TwilioRestClient
 
 def updatedb():
     '''
@@ -72,16 +74,29 @@ def updatedb():
                 curs.execute(job)
                 print(job)
 
-    # Drop the counting table
+    # Drop the counting table and commit database changes
     curs.execute('DELETE FROM chores_unplanned')
     conn.commit()
     return 0
 
-def sendalerts():
+def sendalert(parent, theirs, recipient):
     '''
-    Sends alerts to everyone with a chore coming up the next day
+    Sends alerts to someone with a chore coming up the next day
     '''
     # Get the API token from a file that is not version controlled, no stealing my key :)
+    # The following line needs your Twilio Account SID and Auth Token
+    with open('token.csv', 'rb') as csvfile:
+        reader = csv.reader(csvfile, delimiter=',')
+        for row in reader: 
+            own = row[0]
+            SID = row[1]
+            token = row[2]
+    client = TwilioRestClient(SID, token)
+
+    message = "Yo "+recipient+", vergeet niet dat jij deze week het volgende moet doen: "+parent
+
+    client.messages.create(to="+"+str(theirs), from_="+"+str(own), body=message)
+
     return 0
 
 def main():
