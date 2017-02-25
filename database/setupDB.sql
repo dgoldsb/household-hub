@@ -23,7 +23,8 @@ CREATE TABLE chorelog
     UID INT NOT NULL,
     CID INT NOT NULL,
     finished BIT NOT NULL,
-    date_todo DATE NOT NULL 
+    date_todo DATE NOT NULL,
+    marked_done DATE
 );
 CREATE TABLE reminders
 (

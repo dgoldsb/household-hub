@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html lang="en"><body bgcolor="#4C5E5C">
+<html lang="en">
+<body bgcolor="#4C5E5C">
     <style type="text/css">
     h1{
         color:#4C5E5C !important;
@@ -78,43 +79,26 @@
     <center>
     <img align="none" src="/static/logo_wandelpad.png" style="margin-bottom: 25px;margin-top: 25px;-ms-interpolation-mode: bicubic;border: 0;line-height: 100%;outline: none;text-decoration: none;">
     <div class="boxed">
-        <h1>Welkom bij huize Wandelpad!</h1>
-
-        De volgende klussen staan er voor de komende weken toegewezen aan ons allemaal... 
-        Doe ze op tijd, en markeer wanneer je ze gedaan hebt.
-        Ik genereer automatisch een eerlijk schema, waarin altijd de persoon die iets het langst niet heeft gedaan de klus krijgt.
-        We kunnen dus altijd klusjes toevoegen als er iets blijkt te missen.
-        Ruilen kan als je helemaal naar onder scrolled.
-        Als ik je email krijg stuur ik je zelfs nog automatisch een reminder dat het jouw week is.
-
-        <br><br>
-
-        <center>
-        <table>
-        <thead><tr><th>Name</th><th>Description</th></tr></thead>
-        <tbody>
-        {% for row in x %}
-            <tr bgcolor = row['color']>
-            {% for column in row['values'] %}
-                <td>
-                    column
-                </td>
-            {% endfor %}
-            </tr>
-        {% endfor %}
-        </tbody>
-        </table>
-        </center
-
-        <br><br>
-
-        <center>
-        <form action="." method="POST">
-            <button type="submit" name="goto" value="switch">Klusjes ruilen</button>
-            <button type="submit" name="goto" value="fill">Klusjes afronden</button>
+        <h1>Add a groupmember...</h1>
+        {% if error %}
+        {{ error }} <br><br>
+        {% else %}
+        {% endif %}
+        <form action="/adduser" method="POST">
+            <center>
+            First name: 
+            <input type="text" name="fn"> 
+            <br>
+            Last name: 
+            <input type="text" name="ln"> 
+            <br>
+            <br>
+            <button type="submit" name="add" value="user">Sign up another!</button>
+            <button type="submit" name="add" value="group">Pick a groupname!</button>
+            <br><br>
+            Note: no bonus points are awarded for SQL injections.
+            </center>
         </form>
-        </center>
     </div>
-    </center>
 </body>
 </html>
