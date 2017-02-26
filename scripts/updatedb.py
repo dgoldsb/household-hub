@@ -14,17 +14,17 @@ def updatedb():
     '''
     Add chores for the upcoming 10 weeks that have not been planned yet
     '''
-    conn = sqlite3.connect(os.path.join(ROOT, 'hub.db'))
+    conn = sqlite3.connect(os.path.join(ROOT, 'database/hub.db'))
     conn.text_factory = str
     curs = conn.cursor()
 
     # Get the first weekday date last week
-    curs.execute("SELECT DATE('now','weekday 0','-7 day')")
+    curs.execute("SELECT DATE('now','weekday 0','-6 day')")
     last_week = curs.fetchone()[0]
 
     dates = []
     for i in range(0, 10):
-        shift = i*7
+        shift = i*7+1
         if shift > 0:
             job = "SELECT DATE('now','weekday 0','+%d day')"
             curs.execute(job % shift)
@@ -34,7 +34,7 @@ def updatedb():
         dates.append(curs.fetchone()[0])
 
     curs.execute("SELECT date_todo, CID FROM chorelog WHERE date_todo"\
-                 " > DATE('now','weekday 0','-7 day')")
+                 " > DATE('now','weekday 0','-6 day')")
     pairs_done = curs.fetchall()
 
     curs.execute('SELECT DISTINCT CID FROM chores')
@@ -92,7 +92,7 @@ def findalerts():
     '''
     Send all alerts
     '''
-    conn = sqlite3.connect('../hub.db')
+    conn = sqlite3.connect(os.path.join(ROOT, 'database/hub.db'))
     conn.text_factory = str
     curs = conn.cursor()
 
@@ -115,9 +115,10 @@ def main():
     '''
     Calls all parts of the update
     '''
-    if os.path.isfile(os.path.join(ROOT, 'hub.db')):
-        bufile = os.path.join(ROOT, '../hub_'+str(time.strftime("%c"))+'.db')
-        debug = subprocess.check_output(['cp', '-f', os.path.join(ROOT, 'hub.db')
+    if os.path.isfile(os.path.join(ROOT, 'database/hub.db')):
+        bufile = os.path.join(ROOT, 'database/hub_'+str(time.strftime("%c"))+'.db')
+        print(bufile)
+        debug = subprocess.check_output(['cp', '-f', os.path.join(ROOT, 'database/hub.db')
                                          , bufile])
         print(debug)
     updatedb()

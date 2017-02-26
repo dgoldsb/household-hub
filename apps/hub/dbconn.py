@@ -21,10 +21,12 @@ def get_offenders():
     '''
     Gets the housemates ordered by most non-done chores
     '''
-    job = "SELECT a.first_name, IFNULL(b.no_chores,0) FROM (SELECT first_name,"\
+    job = "SELECT a.first_name, IFNULL(b.no_chores,0) as no_chores FROM (SELECT first_name,"\
           " UID FROM housemates) as a "\
           "LEFT JOIN (SELECT UID, COUNT(*) as no_chores FROM chorelog "\
-          "WHERE date_todo < DATE('now') AND finished = 0 GROUP BY UID) as b ON a.UID = b.UID"
+          "WHERE date_todo < DATE('now','weekday 0','+1 day') AND "\
+          "finished = 0 GROUP BY UID) as b ON a.UID = b.UID "\
+          "ORDER BY no_chores"
     offenders = fetch(job)
 
     # Repackage: add headers
@@ -35,21 +37,33 @@ def get_offenders():
 
     return result
 
-def get_planning(weeklimit=99):
+def get_planning(only_now=False):
     '''
     Gets the chore planning for the past two weeks, this week, and the next 5 weeks
     '''
     # Get a list of all chores in these weeks
-    job = "SELECT DISTINCT a.CID, b.Chore FROM (SELECT * FROM chorelog "\
-          "WHERE date_todo > DATE('now','weekday 0','-15 days') "\
-          "AND date_todo < DATE('now','weekday 0','+36 days')) as a "\
-          "LEFT JOIN (SELECT name as Chore, CID FROM chores) as b ON a.CID = b.CID"
+    job = None
+    if only_now:
+        job = "SELECT DISTINCT a.CID, b.Chore FROM (SELECT * FROM chorelog "\
+            "WHERE date_todo > DATE('now','weekday 0','-14 days') "\
+            "AND date_todo < DATE('now','weekday 0','+2 days')) as a "\
+            "LEFT JOIN (SELECT name as Chore, CID FROM chores) as b ON a.CID = b.CID"
+    else:
+        job = "SELECT DISTINCT a.CID, b.Chore FROM (SELECT * FROM chorelog "\
+            "WHERE date_todo > DATE('now','weekday 0','-14 days') "\
+            "AND date_todo < DATE('now','weekday 0','+37 days')) as a "\
+            "LEFT JOIN (SELECT name as Chore, CID FROM chores) as b ON a.CID = b.CID"
     columns = fetch(job)
 
     # Get a list of all dates in these weeks
-    job = "SELECT DISTINCT date_todo FROM chorelog WHERE "\
-          "date_todo > DATE('now','weekday 0','-15 days') "\
-          "AND date_todo < DATE('now','weekday 0','36 days')"
+    if only_now:
+        job = "SELECT DISTINCT date_todo FROM chorelog WHERE "\
+            "date_todo > DATE('now','weekday 0','-14 days') "\
+            "AND date_todo < DATE('now','weekday 0','+2 days')"
+    else:
+        job = "SELECT DISTINCT date_todo FROM chorelog WHERE "\
+            "date_todo > DATE('now','weekday 0','-14 days') "\
+            "AND date_todo < DATE('now','weekday 0','+37 days')"
     rows = fetch(job)
 
     # Build the table in a way that makes some sense
@@ -79,9 +93,6 @@ def get_planning(weeklimit=99):
             planning_row['values'].append(col)
         planning_row['color'] = colors[0] # TODO: change this
         planning.append(planning_row)
-        weeklimit = weeklimit-1
-        if weeklimit == 0:
-            break
 
     # Repackage: add headers and colors
     header = ['Week']
@@ -97,7 +108,7 @@ def insert(job, args=None):
     '''
     Parameter job is the c-style substitution string, args is tuple
     '''
-    conn = sqlite3.connect(os.path.join(ROOT, 'hub.db'))
+    conn = sqlite3.connect(os.path.join(ROOT, 'database/hub.db'))
     conn.text_factory = str
     curs = conn.cursor()
     if args is not None:
@@ -112,7 +123,7 @@ def fetch(job, args=None):
     Gets and returns a table from the database
     Always returns a fetchall (tuples in list), so a single element is [0][0]
     '''
-    conn = sqlite3.connect(os.path.join(ROOT, 'hub.db'))
+    conn = sqlite3.connect(os.path.join(ROOT, 'database/hub.db'))
     conn.text_factory = str
     curs = conn.cursor()
     if args is not None:

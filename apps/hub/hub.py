@@ -18,7 +18,7 @@ def start():
     '''
     if request.method == 'POST':
         if request.form["goto"] == 'swap':
-            return redirect(url_for('swap'))
+            return redirect(url_for('start'))
         if request.form["goto"] == 'fill':
             return redirect(url_for('fill'))
     planning = dbconn.get_planning()
@@ -43,10 +43,10 @@ def fill():
     Let's you mark stuff as done in the choreschedule
     '''
     if request.method == 'POST':
-        dbconn.flip_done(request.form["date"],request.form["CID"])
+        dbconn.flip_done(request.form["date"], request.form["CID"])
         return redirect(url_for('start'))
     if request.method == 'GET':
-        planning = dbconn.get_planning(2)
+        planning = dbconn.get_planning(True)
         return render_template('fill.html', planning=planning)
 
 if __name__ == '__main__':
