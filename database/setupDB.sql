@@ -4,7 +4,7 @@ CREATE TABLE housemates
     first_name VARCHAR(50) NOT NULL,
     last_name VARCHAR(50) NOT NULL,
     active BIT NOT NULL,
-    phone VARCHAR(50)
+    email VARCHAR(50)
 );
 CREATE TABLE chores
 (
@@ -24,7 +24,7 @@ CREATE TABLE chorelog
     CID INT NOT NULL,
     finished BIT NOT NULL,
     date_todo DATE NOT NULL,
-    marked_done DATE
+    date_finished DATE
 );
 CREATE TABLE reminders
 (

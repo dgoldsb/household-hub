@@ -113,7 +113,7 @@ def main():
     Calls all parts of the update
     '''
     updatedb()
-    findalerts()
+    #findalerts()
 
 if __name__ == "__main__":
     main()

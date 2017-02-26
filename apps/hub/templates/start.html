@@ -91,19 +91,45 @@
 
         <center>
         <table>
-        <thead><tr><th>Name</th><th>Description</th></tr></thead>
+        <thead><tr>
+            {% for head in planning['head'] %}
+                <th>{{ head }}</th>
+            {% endfor %}
+        </tr></thead>
         <tbody>
-        {% for row in x %}
-            <tr bgcolor = row['color']>
+        {% for row in planning['table'] %}
+            <tr>
             {% for column in row['values'] %}
                 <td>
-                    column
+                    {{ column['value'] }}
                 </td>
             {% endfor %}
             </tr>
         {% endfor %}
         </tbody>
         </table>
+
+        <br><br>
+
+        <table>
+        <thead><tr>
+            {% for head in offenders['head'] %}
+                <th>{{ head }}</th>
+            {% endfor %}
+        </tr></thead>
+        <tbody>
+        {% for row in offenders['table'] %}
+            <tr>
+            {% for column in row %}
+                <td>
+                    {{ column }}
+                </td>
+            {% endfor %}
+            </tr>
+        {% endfor %}
+        </tbody>
+        </table>
+
         </center
 
         <br><br>

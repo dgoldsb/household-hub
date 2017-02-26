@@ -12,12 +12,19 @@ app = Flask(__name__)
 
 @app.route('/', methods=['GET', 'POST'])
 def start():
+    '''
+    Shows the main page, with the main thing:
+    the roster with chores so people do their fucking jobs
+    '''
     if request.method == 'POST':
-        if goto == 'swap':
+        if request.form["goto"] == 'swap':
             return redirect(url_for('swap'))
-        if goto == 'fill':
+        if request.form["goto"] == 'fill':
             return redirect(url_for('fill'))
-    return render_template('start.html')
+    planning = dbconn.get_planning()
+    offend = dbconn.get_offenders()
+    return render_template('start.html', planning=planning
+                           , offenders=offend)
 
 @app.route('/switch', methods=['GET', 'POST'])
 def switch():
