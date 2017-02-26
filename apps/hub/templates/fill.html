@@ -1,6 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
-<body bgcolor="#4C5E5C">
+<html lang="en"><body bgcolor="#4C5E5C">
     <style type="text/css">
     h1{
         color:#4C5E5C !important;
@@ -79,26 +78,52 @@
     <center>
     <img align="none" src="/static/logo_wandelpad.png" style="margin-bottom: 25px;margin-top: 25px;-ms-interpolation-mode: bicubic;border: 0;line-height: 100%;outline: none;text-decoration: none;">
     <div class="boxed">
-        <h1>Add a groupmember...</h1>
-        {% if error %}
-        {{ error }} <br><br>
-        {% else %}
-        {% endif %}
-        <form action="/adduser" method="POST">
-            <center>
-            First name: 
-            <input type="text" name="fn"> 
-            <br>
-            Last name: 
-            <input type="text" name="ln"> 
-            <br>
-            <br>
-            <button type="submit" name="add" value="user">Sign up another!</button>
-            <button type="submit" name="add" value="group">Pick a groupname!</button>
-            <br><br>
-            Note: no bonus points are awarded for SQL injections.
-            </center>
-        </form>
+        <h1>Afvinken klussen</h1>
+
+        Klik aan om aan te vinken of iets wel of niet gedaan is.
+
+        <br><br>
+
+        <center>
+        <table>
+        <thead><tr>
+            {% for head in planning['head'] %}
+                <th>{{ head }}</th>
+            {% endfor %}
+        </tr></thead>
+        <tbody>
+        {% for row in planning['table'] %}
+            <tr>
+            {% for column in row['values'] %}
+                <td>
+                    {% if column['done'] == 0 %}
+                        <u>
+                        <form method="post" action="fill">
+                        <input type="hidden" name="date" value="{{ column['date'] }}">
+                        <button type="submit" name="CID" value="{{ column['CID'] }}" class="link-button">
+                            {{ column['value'] }}
+                        </button>
+                        </form>
+                        </u> 
+                    {% elif column['done'] == 1 %}
+                        <form method="post" action="fill">
+                        <input type="hidden" name="date" value="{{ column['date'] }}">
+                        <button type="submit" name="CID" value="{{ column['CID'] }}" class="link-button">
+                        {{ column['value'] }}
+                        </button>
+                        </form>
+                    {% else %}
+                        {{ column['value'] }}
+                    {% endif %}
+                </td>
+            {% endfor %}
+            </tr>
+        {% endfor %}
+        </tbody>
+        </table>
+
+        </center
     </div>
+    </center>
 </body>
 </html>

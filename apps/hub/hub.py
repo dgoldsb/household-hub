@@ -34,7 +34,8 @@ def switch():
     if request.method == 'POST':
         return redirect(url_for('start'))
     if request.method == 'GET':
-        return render_template('switch.html')
+        planning = dbconn.get_planning(2)
+        return render_template('switch.html', planning=planning)
 
 @app.route('/fill', methods=['GET', 'POST'])
 def fill():
@@ -42,9 +43,11 @@ def fill():
     Let's you mark stuff as done in the choreschedule
     '''
     if request.method == 'POST':
+        dbconn.flip_done(request.form["date"],request.form["CID"])
         return redirect(url_for('start'))
     if request.method == 'GET':
-        return render_template('fill.html')
+        planning = dbconn.get_planning(2)
+        return render_template('fill.html', planning=planning)
 
 if __name__ == '__main__':
     app.run(debug=True)

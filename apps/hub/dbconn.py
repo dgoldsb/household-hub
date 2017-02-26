@@ -3,6 +3,19 @@ Module that handles database requests for the Flask layer
 '''
 from __future__ import print_function
 import sqlite3
+import os
+
+ROOT = os.path.join(os.path.dirname(os.path.realpath(__file__)), '../..')
+
+def flip_done(todo, chore):
+    '''
+    Flips the finished bit in the database
+    '''
+    args = (todo, chore)
+    job = "UPDATE chorelog SET finished = CASE WHEN finished = 1 THEN 0 ELSE 1 END "\
+          "WHERE date_todo = '%s' AND CID = %s"
+    insert(job, args)
+    return 0
 
 def get_offenders():
     '''
@@ -22,21 +35,21 @@ def get_offenders():
 
     return result
 
-def get_planning():
+def get_planning(weeklimit=99):
     '''
     Gets the chore planning for the past two weeks, this week, and the next 5 weeks
     '''
     # Get a list of all chores in these weeks
     job = "SELECT DISTINCT a.CID, b.Chore FROM (SELECT * FROM chorelog "\
           "WHERE date_todo > DATE('now','weekday 0','-15 days') "\
-          "AND date_todo < DATE('now','weekday 0','35 days')) as a "\
+          "AND date_todo < DATE('now','weekday 0','+36 days')) as a "\
           "LEFT JOIN (SELECT name as Chore, CID FROM chores) as b ON a.CID = b.CID"
     columns = fetch(job)
 
     # Get a list of all dates in these weeks
     job = "SELECT DISTINCT date_todo FROM chorelog WHERE "\
           "date_todo > DATE('now','weekday 0','-15 days') "\
-          "AND date_todo < DATE('now','weekday 0','35 days')"
+          "AND date_todo < DATE('now','weekday 0','36 days')"
     rows = fetch(job)
 
     # Build the table in a way that makes some sense
@@ -48,8 +61,7 @@ def get_planning():
         planning_row['values'] = []
         week_dict = {}
         week_dict['value'] = row[0]
-        print(row[0])
-        week_dict['done'] = 0 # bit nonsense
+        week_dict['done'] = 2 # bit nonsense
         planning_row['values'].append(week_dict)
         for column in columns:
             col = {}
@@ -62,9 +74,14 @@ def get_planning():
             col['value'] = res[0]
             col['when'] = res[2]
             col['done'] = res[1]
+            col['CID'] = column[0]
+            col['date'] = row[0]
             planning_row['values'].append(col)
         planning_row['color'] = colors[0] # TODO: change this
         planning.append(planning_row)
+        weeklimit = weeklimit-1
+        if weeklimit == 0:
+            break
 
     # Repackage: add headers and colors
     header = ['Week']
@@ -80,7 +97,7 @@ def insert(job, args=None):
     '''
     Parameter job is the c-style substitution string, args is tuple
     '''
-    conn = sqlite3.connect('../../hub.db')
+    conn = sqlite3.connect(os.path.join(ROOT, 'hub.db'))
     conn.text_factory = str
     curs = conn.cursor()
     if args is not None:
@@ -95,7 +112,7 @@ def fetch(job, args=None):
     Gets and returns a table from the database
     Always returns a fetchall (tuples in list), so a single element is [0][0]
     '''
-    conn = sqlite3.connect('../../hub.db')
+    conn = sqlite3.connect(os.path.join(ROOT, 'hub.db'))
     conn.text_factory = str
     curs = conn.cursor()
     if args is not None:
