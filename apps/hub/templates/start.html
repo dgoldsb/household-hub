@@ -100,7 +100,7 @@
         </tr></thead>
         <tbody>
         {% for row in planning['table'] %}
-            <tr color = row['color']>
+            <tr bgcolor = "{{ row['color'] }}">
             {% for column in row['values'] %}
                 <td>
                     {% if column['done'] == 0 %}

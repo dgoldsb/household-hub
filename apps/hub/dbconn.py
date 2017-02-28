@@ -70,7 +70,7 @@ def get_planning(only_now=False):
 
     # Build the table in a way that makes some sense
     # Define some colors and the table
-    colors = ['#fffff', '#d3d3d3']
+    colors = ['#FFFFFF', '#D3D3D3']
     planning = []
     for row in rows:
         planning_row = {}
@@ -94,6 +94,8 @@ def get_planning(only_now=False):
             col['date'] = row[0]
             planning_row['values'].append(col)
 
+        print(row[0] == thisweek)
+        print(thisweek)
         if row[0] == thisweek:
             planning_row['color'] = colors[1]
         else:

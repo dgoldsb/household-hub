@@ -24,7 +24,7 @@ def updatedb():
 
     dates = []
     for i in range(0, 10):
-        shift = i*7+1
+        shift = i*7-6
         if shift > 0:
             job = "SELECT DATE('now','weekday 0','+%d day')"
             curs.execute(job % shift)
