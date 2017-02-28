@@ -24,9 +24,9 @@ def get_offenders():
     job = "SELECT a.first_name, IFNULL(b.no_chores,0) as no_chores FROM (SELECT first_name,"\
           " UID FROM housemates) as a "\
           "LEFT JOIN (SELECT UID, COUNT(*) as no_chores FROM chorelog "\
-          "WHERE date_todo < DATE('now','weekday 0','+1 day') AND "\
+          "WHERE date_todo < DATE('now','weekday 0','-6 day') AND "\
           "finished = 0 GROUP BY UID) as b ON a.UID = b.UID "\
-          "ORDER BY no_chores"
+          "ORDER BY no_chores DESC" # +1 - 7 days, to give people one week to do a chore
     offenders = fetch(job)
 
     # Repackage: add headers
@@ -46,7 +46,7 @@ def get_planning(only_now=False):
     if only_now:
         job = "SELECT DISTINCT a.CID, b.Chore FROM (SELECT * FROM chorelog "\
             "WHERE date_todo > DATE('now','weekday 0','-14 days') "\
-            "AND date_todo < DATE('now','weekday 0','+2 days')) as a "\
+            "AND date_todo < DATE('now','weekday 0','+1 days')) as a "\
             "LEFT JOIN (SELECT name as Chore, CID FROM chores) as b ON a.CID = b.CID"
     else:
         job = "SELECT DISTINCT a.CID, b.Chore FROM (SELECT * FROM chorelog "\
@@ -55,11 +55,13 @@ def get_planning(only_now=False):
             "LEFT JOIN (SELECT name as Chore, CID FROM chores) as b ON a.CID = b.CID"
     columns = fetch(job)
 
+    thisweek = fetch("SELECT DATE('now','weekday 0','-6 day')")[0][0]
+
     # Get a list of all dates in these weeks
     if only_now:
         job = "SELECT DISTINCT date_todo FROM chorelog WHERE "\
             "date_todo > DATE('now','weekday 0','-14 days') "\
-            "AND date_todo < DATE('now','weekday 0','+2 days')"
+            "AND date_todo < DATE('now','weekday 0','+1 days')"
     else:
         job = "SELECT DISTINCT date_todo FROM chorelog WHERE "\
             "date_todo > DATE('now','weekday 0','-14 days') "\
@@ -68,7 +70,7 @@ def get_planning(only_now=False):
 
     # Build the table in a way that makes some sense
     # Define some colors and the table
-    colors = ['#ccff33', '#66ff66', '#cc66ff']
+    colors = ['#fffff', '#d3d3d3']
     planning = []
     for row in rows:
         planning_row = {}
@@ -91,7 +93,12 @@ def get_planning(only_now=False):
             col['CID'] = column[0]
             col['date'] = row[0]
             planning_row['values'].append(col)
-        planning_row['color'] = colors[0] # TODO: change this
+
+        if row[0] == thisweek:
+            planning_row['color'] = colors[1]
+        else:
+            planning_row['color'] = colors[0]
+
         planning.append(planning_row)
 
     # Repackage: add headers and colors
