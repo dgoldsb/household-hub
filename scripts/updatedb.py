@@ -86,22 +86,6 @@ def updatedb():
     conn.commit()
     return 0
 
-def sendalert(parent, address, recipient):
-    '''
-    Sends alerts to someone with a chore coming up the next day
-    '''
-    body = "Yo "+recipient+", vergeet niet dat je dit moet gaan doen (zie titel)"
-
-    address = None
-    pwd = None
-    with open(os.path.join(ROOT, 'scripts/email.csv'), 'rb') as csvfile:
-        reader = csv.reader(csvfile, delimiter=',')
-        for row in reader:
-            address = row[0]
-            pwd = row[1]
-    send_mail(address, [address], parent, body, None, pwd)
-    return 0
-
 def send_mail(send_from, recipients, subject, text, filename, pwd):
     '''
     Sends email, recipients is a list
@@ -124,43 +108,6 @@ def send_mail(send_from, recipients, subject, text, filename, pwd):
     server.starttls()
     server.login(send_from, pwd)
     server.sendmail(msg['From'], emaillist, msg.as_string())
-
-
-def findalerts():
-    '''
-    Send all alerts
-    '''
-    conn = sqlite3.connect(os.path.join(ROOT, 'database/hub.db'))
-    conn.text_factory = str
-    curs = conn.cursor()
-
-    # Send reminders for chores that are today
-    job = "SELECT c.name, b.first_name, b.email FROM (SELECT * FROM chorelog "\
-          "WHERE date_todo == DATE('now') AND finished = 0) as a "\
-          "LEFT JOIN (SELECT * FROM housemates) as b ON a.UID = b.UID "\
-          "LEFT JOIN (SELECT * FROM chores) as c ON a.CID = c.CID"
-    curs.execute(job)
-    reminders = curs.fetchall()
-    for reminder in reminders:
-        print('Sending reminder to %s (%s) about %s...' % reminder)
-        sendalert(reminder[0], reminder[2], reminder[1])
-
-    # Send reminders for chores that are almost overdue
-    job = "SELECT c.name, b.first_name, b.email FROM (SELECT * FROM chorelog "\
-          "WHERE date_todo == DATE('now', '-1 day') AND finished = 0) as a "\
-          "LEFT JOIN (SELECT * FROM housemates) as b ON a.UID = b.UID "\
-          "LEFT JOIN (SELECT * FROM chores) as c ON a.CID = c.CID"
-
-    curs.execute(job)
-    reminders = curs.fetchall()
-    for reminder in reminders:
-        if reminder[2] is not None:
-            print('Sending reminder to %s (%s) about %s...' % reminder)
-            sendalert(reminder[0], reminder[2], reminder[1])
-
-    # TODO: Send reminders for reminders
-
-    return 0
 
 def main():
     '''
@@ -185,7 +132,6 @@ def main():
         send_mail(address, [admin], 'Backup '+bufile, 'See attachment.', bufile, pwd)
         print(debug)
     updatedb()
-    findalerts()
 
 if __name__ == "__main__":
     main()
