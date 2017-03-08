@@ -54,22 +54,46 @@ INSERT INTO teams
 (UID, TID)
 VALUES
 (5, 4);
+INSERT INTO team_chore
+(CID, TID)
+VALUES
+(1, 1);
+INSERT INTO team_chore
+(CID, TID)
+VALUES
+(2, 1);
+INSERT INTO team_chore
+(CID, TID)
+VALUES
+(1, 2);
+INSERT INTO team_chore
+(CID, TID)
+VALUES
+(2, 2);
+INSERT INTO team_chore
+(CID, TID)
+VALUES
+(1, 3);
+INSERT INTO team_chore
+(CID, TID)
+VALUES
+(2, 3);
+INSERT INTO team_chore
+(CID, TID)
+VALUES
+(3, 4);
 INSERT INTO chores
 (CID, name, description)
 VALUES
-(1, 'Keuken schoonmaken', '');
+(3, 'Keuken schoonmaken', '');
 INSERT INTO chores
 (CID, name, description)
 VALUES
-(2, 'Badkamer schoonmaken', '');
+(2, 'Badkamers schoonmaken', '');
 INSERT INTO chores
 (CID, name, description)
 VALUES
-(3, 'Gang en trappen stofzuigen', '');
-INSERT INTO chores
-(CID, name, description)
-VALUES
-(4, 'Toilet beneden schoonmaken', '');
+(1, 'Gang en trappen stofzuigen', '');
 INSERT INTO reminders
 (RID, name, start, recurring, rec_weeks)
 VALUES
