@@ -26,6 +26,34 @@ INSERT INTO housemates
 (UID, first_name, last_name, active, email)
 VALUES
 (7, 'Mike', 'Dörner', 1, NULL);
+INSERT INTO teams
+(UID, TID)
+VALUES
+(1, 1);
+INSERT INTO teams
+(UID, TID)
+VALUES
+(2, 1);
+INSERT INTO teams
+(UID, TID)
+VALUES
+(3, 2);
+INSERT INTO teams
+(UID, TID)
+VALUES
+(6, 2);
+INSERT INTO teams
+(UID, TID)
+VALUES
+(4, 3);
+INSERT INTO teams
+(UID, TID)
+VALUES
+(7, 3);
+INSERT INTO teams
+(UID, TID)
+VALUES
+(5, 4);
 INSERT INTO chores
 (CID, name, description)
 VALUES
