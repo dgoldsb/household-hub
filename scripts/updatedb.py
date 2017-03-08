@@ -48,36 +48,78 @@ def updatedb():
     jobs = curs.fetchall()
 
     # Create counting table
-    job = "INSERT INTO chores_unplanned SELECT UID, CID,"\
+    job = "INSERT INTO chores_unplanned SELECT UID, TID, CID,"\
           " date_todo FROM chorelog WHERE date_todo > '%s'"
     curs.execute(job % last_week)
 
     for date in dates:
         for chore in jobs:
             if (date, chore[0]) not in pairs_done:
-                job = "SELECT a.UID, IFNULL(b.no_jobs,0) AS no_jobs, "\
-                      "IFNULL(d.last_job,'2000-12-12') AS last_job, "\
-                      "IFNULL(c.last_done,'2000-12-12') AS last_done "\
-                      "FROM (SELECT DISTINCT UID FROM housemates WHERE active = 1) AS a "\
-                      "LEFT JOIN (SELECT UID, count(UID) no_jobs FROM chores_unplanned "\
-                      "WHERE date_todo = '%s' AND UID IS NOT NULL "\
-                      "GROUP BY UID) AS b ON a.UID = b.UID "\
-                      "LEFT JOIN (SELECT UID, max(date_todo) AS last_done "\
-                      "FROM chorelog WHERE CID = %d GROUP BY UID) AS c ON a.UID = c.UID "\
-                      "LEFT JOIN (SELECT UID, max(date_todo) AS last_job "\
-                      "FROM chorelog GROUP BY UID) AS d "\
-                      "ON a.UID = d.UID ORDER BY no_jobs ASC, last_done ASC, last_job ASC"
-                curs.execute(job % (date, chore[0]))
+                # Determine the correct teamID
+                # Note that we order by no_jobs DESC, so if one team gets one they
+                # get all they can do
+                job = """SELECT     a.TID
+                                   ,IFNULL(b.no_jobs,0) AS no_jobs
+                                   ,IFNULL(d.last_job,'2000-12-12') AS last_job
+                                   ,IFNULL(c.last_done,'2000-12-12') AS last_done
+                         FROM      (SELECT DISTINCT TID 
+                                    FROM team_chore
+                                    WHERE CID = %d) AS a 
+                         LEFT JOIN (SELECT TID, count(TID) no_jobs 
+                                    FROM chores_unplanned 
+                                    WHERE date_todo = '%s' AND TID IS NOT NULL 
+                                    GROUP BY TID) AS b 
+                         ON         a.TID = b.TID 
+                         LEFT JOIN (SELECT TID, max(date_todo) AS last_done 
+                                    FROM chorelog 
+                                    WHERE CID = %d 
+                                    GROUP BY TID) AS c 
+                         ON         a.TID = c.TID 
+                         LEFT JOIN (SELECT TID, max(date_todo) AS last_job 
+                                    FROM chorelog GROUP BY TID) AS d 
+                         ON         a.TID = d.TID 
+                         ORDER BY   no_jobs DESC
+                                   ,last_done ASC
+                                   ,last_job ASC"""
+                curs.execute(job % (chore[0], date, chore[0]))
+                team = curs.fetchone()[0]
+                
+                # Add teamID to the where statement
+                job = """SELECT     a.UID
+                                   ,IFNULL(b.no_jobs,0) AS no_jobs
+                                   ,IFNULL(d.last_job,'2000-12-12') AS last_job
+                                   ,IFNULL(c.last_done,'2000-12-12') AS last_done
+                         FROM      (SELECT UID FROM teams WHERE TID = %d) AS z
+                         LEFT JOIN (SELECT DISTINCT UID 
+                                    FROM housemates WHERE active = 1) AS a
+                         ON         z.UID = a.UID
+                         LEFT JOIN (SELECT UID, count(UID) no_jobs 
+                                    FROM chores_unplanned 
+                                    WHERE date_todo = '%s' AND UID IS NOT NULL 
+                                    GROUP BY UID) AS b 
+                         ON         a.UID = b.UID 
+                         LEFT JOIN (SELECT UID, max(date_todo) AS last_done 
+                                    FROM chorelog 
+                                    WHERE CID = %d 
+                                    GROUP BY UID) AS c 
+                         ON         a.UID = c.UID 
+                         LEFT JOIN (SELECT UID, max(date_todo) AS last_job 
+                                    FROM chorelog GROUP BY UID) AS d 
+                         ON         a.UID = d.UID 
+                         ORDER BY   no_jobs ASC
+                                   ,last_done ASC
+                                   ,last_job ASC"""
+                curs.execute(job % (team, date, chore[0]))
                 assignee = curs.fetchone()[0]
 
                 # Update in the table that we use to count the number of jobs this week
-                job = "INSERT INTO chores_unplanned (UID, CID, date_todo) VALUES ("+str(assignee)+\
-                      ","+str(chore[0])+",'"+str(date)+"')"
+                job = "INSERT INTO chores_unplanned (UID, TID, CID, date_todo) VALUES ("+str(assignee)+\
+                      ","+str(team)+","+str(chore[0])+",'"+str(date)+"')"
                 curs.execute(job)
 
                 # Insert into chorelog
-                job = "INSERT INTO chorelog (date_todo, CID, finished, UID) "\
-                      "VALUES ('"+str(date)+"', "+str(chore[0])+", 0, "+str(assignee)+")"
+                job = "INSERT INTO chorelog (date_todo, CID, finished, UID, TID) "\
+                      "VALUES ('"+str(date)+"', "+str(chore[0])+", 0, "+str(assignee)+", "+str(team)+")"
                 curs.execute(job)
                 print(job)
 
