@@ -16,7 +16,7 @@ grep $USER+' python '+$a+'/scripts/updateDB.py' /etc/crontab || echo '0  12  *  
 grep $USER+' python '+$a+'/scripts/sendreminders.py' /etc/crontab || echo '0  12  *  *  * '+$USER+' python '+$a+'/scripts/sendreminders.py' >> /etc/crontab
 
 # If cronjob does not exist for launching the flask page (startup), create
-grep $USER+' python '+$a+'/app/hub/hub.py &' /etc/crontab || echo '@REBOOT '+$USER+' python '+$a+'/app/hub/hub.py &' >> /etc/crontab
+grep $USER+' python '+$a+'/app/hub/hub.py &' /etc/crontab || echo '@reboot '+$USER+' python '+$a+'/app/hub/hub.py &' >> /etc/crontab
 
 # Reboot the machine for crontab to take effect
 echo "Reboot the machine for everything to take effect."
