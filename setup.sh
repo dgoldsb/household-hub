@@ -9,14 +9,19 @@ if [ ! -f $a/database/hub.db ]; then
     python $a/scripts/updatedb.py
 fi
 
+echo "Cronjob addition is disabled at the moment, add manually the following: "
+echo '0  12  *  *  1 '+$USER+' python '+$a+'/scripts/updateDB.py'
+echo '0  12  *  *  * '+$USER+' python '+$a+'/scripts/sendreminders.py'
+echo '@reboot '+$USER+' python '+$a+'/app/hub/hub.py &'
+
 # If cronjob does not exist for update (weekly), create
-grep $USER+' python '+$a+'/scripts/updateDB.py' /etc/crontab || echo '0  12  *  *  1 '+$USER+' python '+$a+'/scripts/updateDB.py' >> /etc/crontab
+# grep $USER+' python '+$a+'/scripts/updateDB.py' /etc/crontab || echo '0  12  *  *  1 '+$USER+' python '+$a+'/scripts/updateDB.py' >> /etc/crontab
 
 # If cronjob does not exist for reminders (daily), create
-grep $USER+' python '+$a+'/scripts/sendreminders.py' /etc/crontab || echo '0  12  *  *  * '+$USER+' python '+$a+'/scripts/sendreminders.py' >> /etc/crontab
+# grep $USER+' python '+$a+'/scripts/sendreminders.py' /etc/crontab || echo '0  12  *  *  * '+$USER+' python '+$a+'/scripts/sendreminders.py' >> /etc/crontab
 
 # If cronjob does not exist for launching the flask page (startup), create
-grep $USER+' python '+$a+'/app/hub/hub.py &' /etc/crontab || echo '@reboot '+$USER+' python '+$a+'/app/hub/hub.py &' >> /etc/crontab
+# grep $USER+' python '+$a+'/app/hub/hub.py &' /etc/crontab || echo '@reboot '+$USER+' python '+$a+'/app/hub/hub.py &' >> /etc/crontab
 
 # Reboot the machine for crontab to take effect
 echo "Reboot the machine for everything to take effect."
