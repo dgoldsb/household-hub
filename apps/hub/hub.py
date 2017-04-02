@@ -50,5 +50,5 @@ def fill():
         return render_template('fill.html', planning=planning)
 
 if __name__ == '__main__':
-    app.run(host='10.0.0.104', port=1025, debug=True)
+    app.run(host='10.0.0.100', port=1025, debug=True)
     #app.run(debug=True)
