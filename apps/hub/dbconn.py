@@ -87,13 +87,16 @@ def get_planning(only_now=False):
                   "(SELECT finished, date_finished, UID FROM chorelog WHERE "\
                   "date_todo = '%s' AND CID = %s) as b LEFT JOIN "\
                   "(SELECT first_name, UID FROM housemates) as a ON a.UID = B.UID"
-            res = fetch(job, args)[0]
-            col['value'] = res[0]
-            col['when'] = res[2]
-            col['done'] = res[1]
-            col['CID'] = column[0]
-            col['date'] = row[0]
-            planning_row['values'].append(col)
+            try:
+                res = fetch(job, args)[0]
+                col['value'] = res[0]
+                col['when'] = res[2]
+                col['done'] = res[1]
+                col['CID'] = column[0]
+                col['date'] = row[0]
+                planning_row['values'].append(col)
+            except:
+                print('The date is not in the database', file=sys.stderr)
 
         print(row[0] == thisweek)
         print(thisweek)
@@ -142,3 +145,4 @@ def fetch(job, args=None):
         curs.execute(job)
     table = curs.fetchall()
     return table
+
