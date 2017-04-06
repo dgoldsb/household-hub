@@ -4,6 +4,7 @@ Module that handles database requests for the Flask layer
 from __future__ import print_function
 import sqlite3
 import os
+import sys
 
 ROOT = os.path.join(os.path.dirname(os.path.realpath(__file__)), '../..')
 
