@@ -28,6 +28,7 @@ def get_offenders():
           "LEFT JOIN (SELECT UID, COUNT(*) as no_chores FROM chorelog "\
           "WHERE date_todo < DATE('now','weekday 0','-6 day') AND "\
           "finished = 0 GROUP BY UID) as b ON a.UID = b.UID "\
+          "AND a.UID <> -1"\
           "ORDER BY no_chores DESC" # +1 - 7 days, to give people one week to do a chore
     offenders = fetch(job)
 
@@ -95,6 +96,9 @@ def get_planning(only_now=False):
                 col['done'] = res[1]
                 col['CID'] = column[0]
                 col['date'] = row[0]
+                if col['value'] == 'None':
+                    col['value'] = ''
+                    col['done'] = 1
                 planning_row['values'].append(col)
             except:
                 print('The date is not in the database', file=sys.stderr)
