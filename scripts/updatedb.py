@@ -128,6 +128,14 @@ def updatedb():
     conn.commit()
     return 0
 
+def truncatedb():
+    conn = sqlite3.connect(os.path.join(ROOT, 'database/hub.db'))
+    conn.text_factory = str
+    curs = conn.cursor()
+
+    # Get the first weekday date last week
+    curs.execute("DELETE FROM chorelog WHERE date_todo > DATE('now','weekday 0','+7 day')")
+
 def send_mail(send_from, recipients, subject, text, filename, pwd):
     '''
     Sends email, recipients is a list
@@ -155,6 +163,7 @@ def main():
     '''
     Calls all parts of the update
     '''
+    # Backup
     if os.path.isfile(os.path.join(ROOT, 'database/hub.db')):
         bufile = os.path.join(ROOT, 'database/hub_'+str(time.strftime("%c"))+'.db')
         print(bufile)
@@ -173,6 +182,9 @@ def main():
                 break
         send_mail(address, [admin], 'Backup '+bufile, 'See attachment.', bufile, pwd)
         print(debug)
+    # Truncate (in case housemates leave, make sure all weeks are recomputed)
+    truncatedb()
+    # Do the update
     updatedb()
 
 if __name__ == "__main__":
