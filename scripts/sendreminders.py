@@ -111,6 +111,7 @@ def main():
     # Start logging
     logging.basicConfig(filename=os.path.join(ROOT, 'hub.log'),
                         level=logging.INFO, format='%(asctime)s %(message)s')
+    logging.info('Attempting to send alerts')
     findalerts()
 
 
