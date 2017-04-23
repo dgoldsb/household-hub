@@ -11,6 +11,8 @@ import dbconn
 
 app = Flask(__name__)
 ROOT = os.path.join(os.path.dirname(os.path.realpath(__file__)), '../..')
+logging.basicConfig(filename=os.path.join(ROOT, 'hub.log'),
+                    level=logging.INFO, format='%(asctime)s [%(levelname)s] %(message)s')
 
 @app.route('/', methods=['GET', 'POST'])
 def start():
@@ -53,7 +55,5 @@ def fill():
         return render_template('fill.html', planning=planning)
 
 if __name__ == '__main__':
-    logging.basicConfig(filename=os.path.join(ROOT, 'hub.log'),
-                        level=logging.INFO, format='%(asctime)s %(message)s')
     app.run(host='10.0.0.104', port=1025, debug=True)
     #app.run(debug=True)
