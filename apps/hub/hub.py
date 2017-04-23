@@ -4,11 +4,13 @@ Date: February 2017
 Description: main flask file for the household hub
 """
 from __future__ import print_function
+import os
+import logging
 from flask import Flask, render_template, request, redirect, url_for
 import dbconn
-import sys
 
 app = Flask(__name__)
+ROOT = os.path.join(os.path.dirname(os.path.realpath(__file__)), '../..')
 
 @app.route('/', methods=['GET', 'POST'])
 def start():
@@ -43,6 +45,7 @@ def fill():
     Let's you mark stuff as done in the choreschedule
     '''
     if request.method == 'POST':
+        logging.info('Flipped for job '+str(request.form["CID"])+' on '+str(request.form["date"]))
         dbconn.flip_done(request.form["date"], request.form["CID"])
         return redirect(url_for('start'))
     if request.method == 'GET':
@@ -50,5 +53,7 @@ def fill():
         return render_template('fill.html', planning=planning)
 
 if __name__ == '__main__':
+    logging.basicConfig(filename=os.path.join(ROOT, 'hub.log'),
+                        level=logging.INFO, format='%(asctime)s %(message)s')
     app.run(host='10.0.0.104', port=1025, debug=True)
     #app.run(debug=True)

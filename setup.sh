@@ -9,19 +9,13 @@ if [ ! -f $a/database/hub.db ]; then
     python $a/scripts/updatedb.py
 fi
 
-echo "Cronjob addition is disabled at the moment, add manually the following: "
-echo '0  12  *  *  1 '+$USER+' python '+$a+'/scripts/updateDB.py'
-echo '0  12  *  *  * '+$USER+' python '+$a+'/scripts/sendreminders.py'
-echo '@reboot '+$USER+' python '+$a+'/app/hub/hub.py &'
+# Add cronjobs
+(crontab -l 2>/dev/null; echo "0  12  *  *  * "+$a+"/scripts/remind.sh") | crontab -
+(crontab -l 2>/dev/null; echo "0  12  *  *  1 "+$a+"/scripts/update.sh") | crontab -
+echo "Check for duplicate cronjob manually so far"
 
-# If cronjob does not exist for update (weekly), create
-# grep $USER+' python '+$a+'/scripts/updateDB.py' /etc/crontab || echo '0  12  *  *  1 '+$USER+' python '+$a+'/scripts/updateDB.py' >> /etc/crontab
-
-# If cronjob does not exist for reminders (daily), create
-# grep $USER+' python '+$a+'/scripts/sendreminders.py' /etc/crontab || echo '0  12  *  *  * '+$USER+' python '+$a+'/scripts/sendreminders.py' >> /etc/crontab
-
-# If cronjob does not exist for launching the flask page (startup), create
-# grep $USER+' python '+$a+'/app/hub/hub.py &' /etc/crontab || echo '@reboot '+$USER+' python '+$a+'/app/hub/hub.py &' >> /etc/crontab
+# Set up supervisorcls
+echo "Set up supervisor manually to run launcher.sh"
 
 # Reboot the machine for crontab to take effect
 echo "Reboot the machine for everything to take effect."
