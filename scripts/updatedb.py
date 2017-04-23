@@ -11,10 +11,8 @@ import csv
 from email.mime.text import MIMEText
 from email.mime.application import MIMEApplication
 from email.mime.multipart import MIMEMultipart
-from smtplib import SMTP
 import smtplib
-import sys
-
+import logging
 ROOT = os.path.join(os.path.dirname(os.path.realpath(__file__)), '..')
 
 def updatedb():
@@ -83,7 +81,7 @@ def updatedb():
                                    ,last_job ASC"""
                 curs.execute(job % (chore[0], date, chore[0]))
                 team = curs.fetchone()[0]
-                
+
                 # Add teamID to the where statement
                 job = """SELECT     a.UID
                                    ,IFNULL(b.no_jobs,0) AS no_jobs
@@ -113,15 +111,16 @@ def updatedb():
                 assignee = curs.fetchone()[0]
 
                 # Update in the table that we use to count the number of jobs this week
-                job = "INSERT INTO chores_unplanned (UID, TID, CID, date_todo) VALUES ("+str(assignee)+\
-                      ","+str(team)+","+str(chore[0])+",'"+str(date)+"')"
+                job = "INSERT INTO chores_unplanned (UID, TID, CID, date_todo) VALUES ("\
+                      +str(assignee)+","+str(team)+","+str(chore[0])+",'"+str(date)+"')"
                 curs.execute(job)
 
                 # Insert into chorelog
                 job = "INSERT INTO chorelog (date_todo, CID, finished, UID, TID) "\
-                      "VALUES ('"+str(date)+"', "+str(chore[0])+", 0, "+str(assignee)+", "+str(team)+")"
+                      "VALUES ('"+str(date)+"', "+str(chore[0])+", 0, "+str(assignee)\
+                      +", "+str(team)+")"
                 curs.execute(job)
-                print(job)
+                logging.info('Executing: '+str(job))
 
     # Drop the counting table and commit database changes
     curs.execute('DELETE FROM chores_unplanned')
@@ -129,6 +128,9 @@ def updatedb():
     return 0
 
 def truncatedb():
+    """
+    Truncates the database, and rebuilds
+    """
     conn = sqlite3.connect(os.path.join(ROOT, 'database/hub.db'))
     conn.text_factory = str
     curs = conn.cursor()
@@ -163,10 +165,14 @@ def main():
     '''
     Calls all parts of the update
     '''
+    # Start logging
+    logging.basicConfig(filename=os.path.join(ROOT, 'hub.log'),
+                        level=logging.INFO, format='%(asctime)s %(message)s')
+
     # Backup
     if os.path.isfile(os.path.join(ROOT, 'database/hub.db')):
         bufile = os.path.join(ROOT, 'database/hub_'+str(time.strftime("%c"))+'.db')
-        print(bufile)
+        logging.info('Backing database up to '+str(bufile))
         debug = subprocess.check_output(['cp', '-f', os.path.join(ROOT, 'database/hub.db')
                                          , bufile])
 
@@ -181,11 +187,14 @@ def main():
                 admin = row[2]
                 break
         send_mail(address, [admin], 'Backup '+bufile, 'See attachment.', bufile, pwd)
-        print(debug)
+        logging.debug(debug)
+
     # Truncate (in case housemates leave, make sure all weeks are recomputed)
     truncatedb()
+    logging.info('Truncated database')
     # Do the update
     updatedb()
+    logging.info('Updated database')
 
 if __name__ == "__main__":
     main()

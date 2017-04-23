@@ -8,9 +8,8 @@ import csv
 from email.mime.text import MIMEText
 from email.mime.application import MIMEApplication
 from email.mime.multipart import MIMEMultipart
-from smtplib import SMTP
 import smtplib
-import sys
+import logging
 
 ROOT = os.path.join(os.path.dirname(os.path.realpath(__file__)), '..')
 
@@ -39,7 +38,7 @@ def send_mail(send_from, recipients, subject, text, filename, pwd):
     server.login(send_from, pwd)
     server.sendmail(msg['From'], emaillist, msg.as_string())
 
-def sendalert(parent, address, recipient):
+def sendalert(parent, address, recipient, admin):
     '''
     Sends alerts to someone with a chore coming up the next day
     '''
@@ -52,8 +51,7 @@ def sendalert(parent, address, recipient):
         for row in reader:
             sender_address = row[0]
             pwd = row[1]
-    print(sender_address, [address], parent, body, None, pwd)
-    send_mail(sender_address, [address], parent, body, None, pwd)
+    send_mail(sender_address, [address, admin], parent, body, None, pwd)
     return 0
 
 
@@ -65,6 +63,11 @@ def findalerts():
     conn.text_factory = str
     curs = conn.cursor()
 
+    # Find the admin
+    job = "SELECT email FROM housemates WHERE UID = 1"
+    curs.execute(job)
+    admin = curs.fetchall()[0]
+
     # Send reminders for chores that are today
     job = "SELECT c.name, b.first_name, b.email FROM (SELECT * FROM chorelog "\
           "WHERE date_todo == DATE('now') AND finished = 0) as a "\
@@ -73,8 +76,13 @@ def findalerts():
     curs.execute(job)
     reminders = curs.fetchall()
     for reminder in reminders:
-        print('Sending reminder to %s (%s) about %s...' % reminder)
-        sendalert(reminder[0], reminder[2], reminder[1])
+        logging.info('Attempting to send early reminder')
+        if reminder[2] is not None:
+            logging.info('Sent reminder to '+str(reminder[1])+' ('\
+                        +str(reminder[2])+') about '+str(reminder[0]))
+            sendalert(reminder[0], reminder[2], reminder[1], admin)
+        else:
+            logging.info('No email address given')
 
     # Send reminders for chores that are almost overdue
     job = "SELECT c.name, b.first_name, b.email FROM (SELECT * FROM chorelog "\
@@ -85,10 +93,13 @@ def findalerts():
     curs.execute(job)
     reminders = curs.fetchall()
     for reminder in reminders:
+        logging.info('Attempting to send late reminder')
         if reminder[2] is not None:
-            sendalert(reminder[0], reminder[2], reminder[1])
-
-    # TODO: Send reminders for reminders
+            logging.info('Sent reminder to '+str(reminder[1])+' ('\
+                        +str(reminder[2])+') about '+str(reminder[0]))
+            sendalert(reminder[0], reminder[2], reminder[1], admin)
+        else:
+            logging.info('No email address given')
 
     return 0
 
@@ -96,6 +107,9 @@ def main():
     '''
     Main function
     '''
+    # Start logging
+    logging.basicConfig(filename=os.path.join(ROOT, 'hub.log'),
+                        level=logging.INFO, format='%(asctime)s %(message)s')
     findalerts()
 
 
