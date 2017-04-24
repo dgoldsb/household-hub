@@ -10,8 +10,8 @@ if [ ! -f $a/database/hub.db ]; then
 fi
 
 # Add cronjobs
-(crontab -l 2>/dev/null; echo "0  12  *  *  * "+$a+"/scripts/remind.sh") | crontab -
-(crontab -l 2>/dev/null; echo "0  12  *  *  1 "+$a+"/scripts/update.sh") | crontab -
+(crontab -l 2>/dev/null; echo "0  12  *  *  * /bin/bash "+$a+"/scripts/remind.sh") | crontab -
+(crontab -l 2>/dev/null; echo "0  12  *  *  1 /bin/bash "+$a+"/scripts/update.sh") | crontab -
 echo "Check for duplicate cronjob manually so far"
 
 # Set up supervisorcls
