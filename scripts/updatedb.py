@@ -13,7 +13,7 @@ from email.mime.application import MIMEApplication
 from email.mime.multipart import MIMEMultipart
 import smtplib
 import logging
-ROOT = os.path.join(os.path.dirname(os.path.realpath(__file__)), '../..')
+ROOT = os.path.join(os.path.dirname(os.path.realpath(__file__)), '..')
 logging.basicConfig(filename=os.path.join(ROOT, 'hub.log'),
                     level=logging.INFO, format='%(asctime)s [%(levelname)s] %(message)s')
 
