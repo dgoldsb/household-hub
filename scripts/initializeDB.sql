@@ -9,7 +9,7 @@ VALUES
 INSERT INTO housemates
 (UID, first_name, last_name, active, email)
 VALUES
-(3, 'Beau', 'Schaepman', 1, NULL);
+(3, 'Marvin', NULL, 1, NULL);
 INSERT INTO housemates
 (UID, first_name, last_name, active, email)
 VALUES
@@ -26,62 +26,58 @@ INSERT INTO housemates
 (UID, first_name, last_name, active, email)
 VALUES
 (7, 'Mike', 'Dörner', 1, NULL);
-INSERT INTO teams
-(UID, TID)
+INSERT INTO housemate_chore
+(CID, UID)
 VALUES
 (1, 1);
-INSERT INTO teams
-(UID, TID)
+INSERT INTO housemate_chore
+(CID, UID)
 VALUES
 (2, 1);
-INSERT INTO teams
-(UID, TID)
-VALUES
-(3, 2);
-INSERT INTO teams
-(UID, TID)
-VALUES
-(6, 2);
-INSERT INTO teams
-(UID, TID)
-VALUES
-(4, 3);
-INSERT INTO teams
-(UID, TID)
-VALUES
-(7, 3);
-INSERT INTO teams
-(UID, TID)
-VALUES
-(5, 4);
-INSERT INTO team_chore
-(CID, TID)
-VALUES
-(1, 1);
-INSERT INTO team_chore
-(CID, TID)
-VALUES
-(2, 1);
-INSERT INTO team_chore
-(CID, TID)
+INSERT INTO housemate_chore
+(CID, UID)
 VALUES
 (1, 2);
-INSERT INTO team_chore
-(CID, TID)
+INSERT INTO housemate_chore
+(CID, UID)
 VALUES
 (2, 2);
-INSERT INTO team_chore
-(CID, TID)
+INSERT INTO housemate_chore
+(CID, UID)
 VALUES
 (1, 3);
-INSERT INTO team_chore
-(CID, TID)
+INSERT INTO housemate_chore
+(CID, UID)
 VALUES
 (2, 3);
-INSERT INTO team_chore
-(CID, TID)
+INSERT INTO housemate_chore
+(CID, UID)
 VALUES
-(3, 4);
+(1, 4);
+INSERT INTO housemate_chore
+(CID, UID)
+VALUES
+(2, 4);
+INSERT INTO housemate_chore
+(CID, UID)
+VALUES
+(1, 5);
+INSERT INTO housemate_chore
+(CID, UID)
+VALUES
+(2, 5);
+INSERT INTO housemate_chore
+(CID, UID)
+VALUES
+(1, 6);
+INSERT INTO housemate_chore
+(CID, UID)
+VALUES
+(2, 6);
+INSERT INTO housemate_chore
+(CID, UID)
+VALUES
+(3, 7);
 INSERT INTO chores
 (CID, name, description)
 VALUES

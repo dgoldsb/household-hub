@@ -6,15 +6,10 @@ CREATE TABLE housemates
     active BIT NOT NULL,
     email VARCHAR(50)
 );
-CREATE TABLE teams
-(
-    UID INT NOT NULL,
-    TID INT NOT NULL
-);
-CREATE TABLE team_chore
+CREATE TABLE housemate_chore
 (
     CID INT NOT NULL,
-    TID INT NOT NULL
+    UID INT NOT NULL
 );
 CREATE TABLE chores
 (
@@ -26,13 +21,11 @@ CREATE TABLE chores_unplanned
 (
     CID INT NOT NULL,
     UID INT,
-    TID INT,
     date_todo DATE
 );
 CREATE TABLE chorelog
 (
     UID INT NOT NULL, 
-    TID INT,
     CID INT NOT NULL,
     finished BIT NOT NULL,
     date_todo DATE NOT NULL,
