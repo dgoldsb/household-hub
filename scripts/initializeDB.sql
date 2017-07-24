@@ -9,7 +9,7 @@ VALUES
 INSERT INTO housemates
 (UID, first_name, last_name, active, email)
 VALUES
-(3, 'Marvin', NULL, 1, NULL);
+(3, 'Beau', 'Schaepman', 0, NULL);
 INSERT INTO housemates
 (UID, first_name, last_name, active, email)
 VALUES
@@ -26,6 +26,10 @@ INSERT INTO housemates
 (UID, first_name, last_name, active, email)
 VALUES
 (7, 'Mike', 'Dörner', 1, NULL);
+INSERT INTO housemates
+(UID, first_name, last_name, active, email)
+VALUES
+(8, 'Marvin', NULL, 0, NULL);
 INSERT INTO housemate_chore
 (CID, UID)
 VALUES
@@ -78,6 +82,14 @@ INSERT INTO housemate_chore
 (CID, UID)
 VALUES
 (3, 7);
+INSERT INTO housemate_chore
+(CID, UID)
+VALUES
+(1, 8);
+INSERT INTO housemate_chore
+(CID, UID)
+VALUES
+(2, 8);
 INSERT INTO chores
 (CID, name, description)
 VALUES
