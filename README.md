@@ -7,6 +7,8 @@ Uses Flask for the webpage, and whatever database backend is easy to use in the 
 
 ## Setup
 
+Fill [this script](./scripts/initializeDB.sql) with the contents of your database.
+
 Run the setup.sh procedure in the root directory to setup the database, add the cronjobs, and reboot the system. After reboot, the Flask server launches on startup. Add the email address, password, and admin email address (backups will be sent to this email) to the file ./scripts/email.csv. Make sure that you added the IP of your Pi in the hub.py script. I will work later on building a proper config file, if anyone takes interest in this. Text is in Dutch so far, again something I should take out of the scripts/HTML templates as much as possible, and put in a config file.
 
 It is important to keep in mind that the admin, who will be CC'ed emails, is to have UID 1.

@@ -64,7 +64,7 @@ def updatedb():
                          FROM      (SELECT DISTINCT UID 
                                     FROM housemate_chore
                                     WHERE CID = %d) AS a 
-                         LEFT JOIN (SELECT UID, count(TID) no_jobs 
+                         LEFT JOIN (SELECT UID, count(CID) no_jobs 
                                     FROM chores_unplanned 
                                     WHERE date_todo = '%s' AND UID IS NOT NULL 
                                     GROUP BY UID) AS b 
@@ -77,7 +77,11 @@ def updatedb():
                          LEFT JOIN (SELECT UID, max(date_todo) AS last_job 
                                     FROM chorelog 
                                     GROUP BY UID) AS d 
-                         ON         a.UID = d.UID 
+                         ON         a.UID = d.UID
+                         INNER JOIN (SELECT UID
+                                    FROM housemates
+                                    WHERE active = 1) as e
+                         ON         a.UID = e.UID
                          ORDER BY   no_jobs ASC
                                    ,last_job ASC
                                    ,last_done ASC
