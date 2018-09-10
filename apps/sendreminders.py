@@ -50,7 +50,7 @@ def sendalert(parent, address, recipient, admin):
 
     sender_address = None
     pwd = None
-    with open(os.path.join(ROOT, 'scripts/email.csv'), 'rb') as csvfile:
+    with open(os.path.join(ROOT, 'scripts/config.csv'), 'rb') as csvfile:
         reader = csv.reader(csvfile, delimiter=',')
         for row in reader:
             sender_address = row[0]
@@ -68,14 +68,14 @@ def findalerts():
     curs = conn.cursor()
 
     # Find the admin
-    job = "SELECT email FROM housemates WHERE UID = 1"
+    job = "SELECT email FROM persons WHERE UID = 1"
     curs.execute(job)
     admin = curs.fetchall()[0][0]
 
     # Send reminders for chores that are today
     job = "SELECT c.name, b.first_name, b.email FROM (SELECT * FROM chorelog "\
           "WHERE date_todo == DATE('now') AND finished = 0) as a "\
-          "LEFT JOIN (SELECT * FROM housemates) as b ON a.UID = b.UID "\
+          "LEFT JOIN (SELECT * FROM persons) as b ON a.UID = b.UID "\
           "LEFT JOIN (SELECT * FROM chores) as c ON a.CID = c.CID"
     curs.execute(job)
     reminders = curs.fetchall()
@@ -91,7 +91,7 @@ def findalerts():
     # Send reminders for chores that are almost overdue
     job = "SELECT c.name, b.first_name, b.email FROM (SELECT * FROM chorelog "\
           "WHERE date_todo == DATE('now', '-4 day') AND finished = 0) as a "\
-          "LEFT JOIN (SELECT * FROM housemates) as b ON a.UID = b.UID "\
+          "LEFT JOIN (SELECT * FROM persons) as b ON a.UID = b.UID "\
           "LEFT JOIN (SELECT * FROM chores) as c ON a.CID = c.CID"
 
     curs.execute(job)

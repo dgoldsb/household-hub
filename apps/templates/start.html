@@ -76,13 +76,19 @@
     }
     </style>
     <center>
-    <img align="none" src="/static/logo_wandelpad.png" style="margin-bottom: 25px;margin-top: 25px;-ms-interpolation-mode: bicubic;border: 0;line-height: 100%;outline: none;text-decoration: none;">
+    <img align="none" src="/static/house.png" style="margin-bottom: 25px;margin-top: 25px;-ms-interpolation-mode: bicubic;border: 0;line-height: 100%;outline: none;text-decoration: none;">
     <div class="boxed">
-        <h1>Afvinken klussen</h1>
+        <h1>Welcome to the Super Simple Scheduler (S3)</h1>
 
-        Klik aan om aan te vinken of iets wel of niet gedaan is.
+        Do them, and mark them when you are done.<br><br>
+        The schedule is generated in a way to give the person the chore that has not done it for the longest time.
+        If we are missing a chore we can always add one, contact the admin.<br><br>
+        If you provide the admin with your email you can be sent reminders when you have to do a chore.
+        The following chores are distributed for the coming weeks.
 
         <br><br>
+
+        <h1>Chore distribution</h1>
 
         <center>
         <table>
@@ -93,25 +99,11 @@
         </tr></thead>
         <tbody>
         {% for row in planning['table'] %}
-            <tr>
+            <tr bgcolor = "{{ row['color'] }}">
             {% for column in row['values'] %}
                 <td>
                     {% if column['done'] == 0 %}
-                        <u>
-                        <form method="post" action="fill">
-                        <input type="hidden" name="date" value="{{ column['date'] }}">
-                        <button type="submit" name="CID" value="{{ column['CID'] }}" class="link-button">
-                            {{ column['value'] }}
-                        </button>
-                        </form>
-                        </u> 
-                    {% elif column['done'] == 1 %}
-                        <form method="post" action="fill">
-                        <input type="hidden" name="date" value="{{ column['date'] }}">
-                        <button type="submit" name="CID" value="{{ column['CID'] }}" class="link-button">
-                        {{ column['value'] }}
-                        </button>
-                        </form>
+                        <font color='#8B0000'> {{ column['value'] }} </font>
                     {% else %}
                         {{ column['value'] }}
                     {% endif %}
@@ -122,8 +114,40 @@
         </tbody>
         </table>
 
+        <br><br>
+
+        <h1>Wall of shame</h1>
+
+        <table>
+        <thead><tr>
+            {% for head in offenders['head'] %}
+                <th>{{ head }}</th>
+            {% endfor %}
+        </tr></thead>
+        <tbody>
+        {% for row in offenders['table'] %}
+            <tr>
+            {% for column in row %}
+                <td>
+                    {{ column }}
+                </td>
+            {% endfor %}
+            </tr>
+        {% endfor %}
+        </tbody>
+        </table>
+
         </center>
-        <a href="https://www.github.com/dgoldsb/household-hub">GitHub repository</a>
+
+        <br><br>
+
+        <center>
+        <form action="." method="POST">
+            <!--<button type="submit" name="goto" value="switch">Klusjes ruilen</button>-->
+            <button type="submit" name="goto" value="fill">Mark chores as done</button>
+        </form>
+        </center>
+    <a href="https://www.github.com/dgoldsb/super-simple-scheduler">GitHub repository</a>
     </div>
     </center>
 </body>

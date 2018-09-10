@@ -62,7 +62,7 @@ def updatedb():
                                    ,IFNULL(d.last_job,'2000-12-12') AS last_job
                                    ,IFNULL(c.last_done,'2000-12-12') AS last_done
                          FROM      (SELECT DISTINCT UID 
-                                    FROM housemate_chore
+                                    FROM person_chore
                                     WHERE CID = %d) AS a 
                          LEFT JOIN (SELECT UID, count(CID) no_jobs 
                                     FROM chores_unplanned 
@@ -79,7 +79,7 @@ def updatedb():
                                     GROUP BY UID) AS d 
                          ON         a.UID = d.UID
                          INNER JOIN (SELECT UID
-                                    FROM housemates
+                                    FROM persons
                                     WHERE active = 1) as e
                          ON         a.UID = e.UID
                          ORDER BY   no_jobs ASC
@@ -154,7 +154,7 @@ def main():
         address = None
         pwd = None
         admin = None
-        with open(os.path.join(ROOT, 'scripts/email.csv'), 'rb') as csvfile:
+        with open(os.path.join(ROOT, 'scripts/config.csv'), 'rb') as csvfile:
             reader = csv.reader(csvfile, delimiter=',')
             for row in reader:
                 address = row[0]
@@ -164,7 +164,7 @@ def main():
         send_mail(address, [admin], 'Backup '+bufile, 'See attachment.', bufile, pwd)
         logging.debug(debug)
 
-    # Truncate (in case housemates leave, make sure all weeks are recomputed)
+    # Truncate (in case persons leave, make sure all weeks are recomputed)
     truncatedb()
     logging.info('Truncated database')
     # Do the update

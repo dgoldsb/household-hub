@@ -1,4 +1,4 @@
-CREATE TABLE housemates
+CREATE TABLE persons
 (
     UID INT NOT NULL PRIMARY KEY,
     first_name VARCHAR(50) NOT NULL,
@@ -6,7 +6,7 @@ CREATE TABLE housemates
     active BIT NOT NULL,
     email VARCHAR(50)
 );
-CREATE TABLE housemate_chore
+CREATE TABLE person_chore
 (
     CID INT NOT NULL,
     UID INT NOT NULL
@@ -40,7 +40,7 @@ CREATE TABLE reminders
     recurring BIT NOT NULL,
     rec_weeks INT
 );
-CREATE TABLE reminder_housemate
+CREATE TABLE reminder_person
 (
     RID INT NOT NULL,
     UID INT NOT NULL
