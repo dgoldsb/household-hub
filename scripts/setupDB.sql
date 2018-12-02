@@ -31,17 +31,4 @@ CREATE TABLE chorelog
     date_todo DATE NOT NULL,
     date_finished DATE
 );
-CREATE TABLE reminders
-(
-    RID INT NOT NULL PRIMARY KEY,
-    name VARCHAR (50) NOT NULL,
-    start DATE NOT NULL,
-    finish DATE,
-    recurring BIT NOT NULL,
-    rec_weeks INT
-);
-CREATE TABLE reminder_person
-(
-    RID INT NOT NULL,
-    UID INT NOT NULL
-);
+

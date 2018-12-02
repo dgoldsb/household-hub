@@ -1,3 +1,3 @@
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-cd "$DIR/../apps/hub/"
-sudo python app.py
+cd "$DIR/../apps/"
+sudo python3 app.py
