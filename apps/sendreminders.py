@@ -12,7 +12,7 @@ from email.mime.multipart import MIMEMultipart
 import smtplib
 import logging
 
-ROOT = os.path.join(os.path.dirname(os.path.realpath(__file__)), '../..')
+ROOT = os.path.join(os.path.dirname(os.path.realpath(__file__)), '..')
 logging.basicConfig(filename=os.path.join(ROOT, 'hub.log'),
                     level=logging.INFO, format='%(asctime)s [%(levelname)s] %(message)s')
 
@@ -41,11 +41,11 @@ def find_alerts():
         FROM (
             SELECT *
             FROM chorelog
-            WHERE date_todo == DATE('now') OR date_todo == DATE('now', '-4 day')
+            WHERE date_todo == DATE('now') OR date_todo == DATE('now', '+1 day')
             ) AS a
             LEFT JOIN (
                 SELECT * 
-                FROM persons
+                FROM housemates
                 ) AS b 
             ON a.UID = b.UID
             LEFT JOIN (
@@ -85,7 +85,7 @@ def send_alert(chore, recipient_address, recipient_name, template='reminder_temp
             pwd = row[1]
             
     # Send the email.
-    send_mail(sender_address, [recipient_address], chore, body, None, pwd)
+    send_mail(sender_address, [recipient_address], chore, body, pwd)
 
 
 def send_mail(send_from, recipients, subject, text, pwd, filename=None):
