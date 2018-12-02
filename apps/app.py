@@ -128,4 +128,4 @@ if __name__ == '__main__':
     big_code.png(filepath, scale=3, module_color='#000000', background='#ffffff')
 
     # Start the app.
-    app.run(host=host, port=port, debug=True)
+    app.run(host=host, port=port, debug=False)
