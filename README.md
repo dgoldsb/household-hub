@@ -1,5 +1,8 @@
 # Super Simple Scheduler
 
+**Disclaimer**: I wrote this as a joke project waaaaay back when I was first trying out `Flask`/`SQLite`.
+I cleaned it up a bit later because this project did find use, but it is a bit of a mess as a result, and is not intended to be a stellar project.
+
 ## Introduction
 
 I would have called it S3, damn Amazon.
