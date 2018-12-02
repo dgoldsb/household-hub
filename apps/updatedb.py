@@ -16,7 +16,7 @@ def truncate_database():
     """
     Truncates the database, and rebuilds.
     """
-    # Get the first weekday date last week.
+    # Truncate all weeks that did not happen yet.
     execute("DELETE FROM chorelog WHERE date_todo >= DATE('now','weekday 0')")
 
 
