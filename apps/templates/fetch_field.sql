@@ -17,5 +17,5 @@ FROM (
         first_name,
         UID
     FROM
-        persons) as a
+        housemates) as a
     ON a.UID = B.UID;

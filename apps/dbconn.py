@@ -5,7 +5,7 @@ Module that handles database requests for the Flask layer.
 import os
 import sqlite3
 
-ROOT = os.path.join(os.path.dirname(os.path.realpath(__file__)), '../..')
+ROOT = os.path.join(os.path.dirname(os.path.realpath(__file__)), '..')
 DATABASE = os.path.join(ROOT, 'database/hub.db')
 
 

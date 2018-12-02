@@ -5,7 +5,7 @@ Update the database, weekly or daily cronjob.
 import logging
 import os
 
-from .dbconn import execute, fetch_one, fetch
+from dbconn import execute, fetch_one, fetch
 
 ROOT = os.path.join(os.path.dirname(os.path.realpath(__file__)), '..')
 logging.basicConfig(filename=os.path.join(ROOT, 'hub.log'),
@@ -17,7 +17,7 @@ def truncate_database():
     Truncates the database, and rebuilds.
     """
     # Get the first weekday date last week.
-    execute("DELETE FROM chorelog WHERE date_todo > DATE('now','weekday 0','+7 day')")
+    execute("DELETE FROM chorelog WHERE date_todo >= DATE('now','weekday 0','+7 day')")
 
 
 def update_database():
@@ -46,6 +46,8 @@ def update_database():
 
     # Iterate over the dates and jobs.
     for date in dates:
+        if date is None:
+            continue
         for chore in jobs:
             # Check if the job/date pair is done.
             if (date, chore[0]) not in pairs_done:
@@ -58,7 +60,7 @@ def update_database():
                            ,IFNULL(c.last_done,'2000-12-12') AS last_done
                     FROM    
                         (SELECT DISTINCT UID 
-                        FROM person_chore
+                        FROM housemate_chore
                         WHERE CID = {chore}) AS a 
                     LEFT JOIN 
                         (SELECT UID, count(CID) no_jobs 
@@ -77,7 +79,7 @@ def update_database():
                             GROUP BY UID) AS d 
                     ON a.UID = d.UID
                     INNER JOIN (SELECT UID
-                            FROM persons
+                            FROM housemates
                             WHERE active = 1) as e
                     ON a.UID = e.UID
                     ORDER BY
@@ -85,7 +87,7 @@ def update_database():
                        ,last_job ASC
                        ,last_done ASC""".format(chore=chore[0], date=date)
                 assignee = fetch_one(query)
-
+                
                 # Update in the table that we use to count the number of jobs this week.
                 execute("INSERT INTO chores_unplanned (UID, CID, date_todo) VALUES ({}, {}, '{}')".format(str(assignee),
                                                                                                           str(chore[0]),

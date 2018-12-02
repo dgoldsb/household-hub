@@ -118,14 +118,14 @@ def get_planning(only_now=False):
 
 
 if __name__ == '__main__':
-    host = 'localhost'
+    host = '172.16.1.23'
     port = 1025
 
     # Create a QR code.
     address = '{}:{}'.format(host, port)
     filepath = os.path.join(ROOT, 'apps', 'static', 'qr.png')
-    big_code = pyqrcode.create(address, error='L', version=27, mode='binary')
-    big_code.png(filepath, scale=6, module_color='#000000', background=[0xff, 0xff, 0xcc])
+    big_code = pyqrcode.create(address, error='M', version=27, mode='binary')
+    big_code.png(filepath, scale=3, module_color='#000000', background='#ffffff')
 
     # Start the app.
     app.run(host=host, port=port, debug=True)
