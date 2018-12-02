@@ -1,16 +1,19 @@
 """
 Author: Dylan Goldsborough
 Date: February 2017
-Description: main flask file for the household hub
+Description: main flask file for the super simple scheduler
 """
-from __future__ import print_function
+
 import os
 import logging
-from flask import Flask, render_template, request, redirect, url_for
-import dbconn
+
+from flask import Flask, render_template
+import pyqrcode
+
+from dbconn import fetch
 
 app = Flask(__name__)
-ROOT = os.path.join(os.path.dirname(os.path.realpath(__file__)), '../..')
+ROOT = os.path.join(os.path.dirname(os.path.realpath(__file__)), '..')
 logging.basicConfig(
     filename=os.path.join(ROOT, "app.log"),
     filemode='a',
@@ -20,48 +23,109 @@ logging.basicConfig(
 LOG = logging.getLogger("app")
 
 
-@app.route('/', methods=['GET', 'POST'])
+@app.route('/', methods=['GET'])
 def start():
     """
     Shows the main page, with the main thing: the roster with chores so people do their fucking jobs.
     """
     LOG.info("Main page is requested.")
-    if request.method == 'POST':
-        if request.form["goto"] == 'swap':
-            return redirect(url_for('start'))
-        if request.form["goto"] == 'fill':
-            return redirect(url_for('fill'))
-    planning = dbconn.get_planning()
-    offend = dbconn.get_offenders()
-    return render_template('start.html', planning=planning
-                           , offenders=offend)
+    planning = get_planning()
+    return render_template('start.html', planning=planning)
 
 
-@app.route('/switch', methods=['GET', 'POST'])
-def switch():
+def get_planning(only_now=False):
     """
-    Let's you switch chores around.
-    """
-    if request.method == 'POST':
-        return redirect(url_for('start'))
-    if request.method == 'GET':
-        planning = dbconn.get_planning(2)
-        return render_template('switch.html', planning=planning)
+    Gets the chore planning for the past two weeks, this week, and the next 5 weeks. The returned dictionary contains
+    a header and a table. The header is a list, the table is a list of dictionaries.
 
+    :param only_now: run for only the past two weeks (type=Boolean)
+    :return: a table containing the planning (type=dict)
+    """
+    # Get a list of all chores in these weeks.
+    with open(os.path.join(ROOT, "apps/templates/list_chores.sql"), 'r') as file:
+        LOG.info("Fetching the planning with only_now = {}.".format(only_now))
+        if only_now:
+            job = file.read().format("-7", "+1")
+        else:
+            job = file.read().format("-14", "+37")
+    columns = fetch(job)
 
-@app.route('/fill', methods=['GET', 'POST'])
-def fill():
-    """
-    Let's you mark stuff as done in the chore schedule.
-    """
-    if request.method == 'POST':
-        LOG.info('Flipped for job '+str(request.form["CID"])+' on '+str(request.form["date"]))
-        dbconn.flip_done(request.form["date"], request.form["CID"])
-        return redirect(url_for('start'))
-    if request.method == 'GET':
-        planning = dbconn.get_planning(True)
-        return render_template('fill.html', planning=planning)
+    # Get the current week.
+    current_week = fetch("SELECT DATE('now','weekday 0','-6 day')")[0][0]
+
+    # Get a list of all dates in these weeks.
+    with open(os.path.join(ROOT, "apps/templates/dates_in_week.sql"), 'r') as file:
+        if only_now:
+            job = file.read().format("-14", "+1")
+        else:
+            job = file.read().format("-14", "+37")
+    rows = fetch(job)
+
+    # Define some colors and the table.
+    colors = ['#FFFFFF', '#D3D3D3']
+
+    # Get the template job.
+    with open(os.path.join(ROOT, "apps/templates/fetch_field.sql"), 'r') as file:
+        template_job = file.read()
+
+    # Build the table in a way that makes some sense.
+    planning = []
+    for row in rows:
+        # Create a dictionary for the row.
+        planning_row = dict()
+        planning_row['values'] = []
+
+        # Create a dictionary for the week.
+        week_dict = dict()
+        week_dict['value'] = row[0]
+        week_dict['done'] = 2
+        planning_row['values'].append(week_dict)
+
+        # Loop over the columns.
+        for column in columns:
+            col = dict()
+            args = (row[0], column[0])
+            try:
+                res = fetch(template_job, args)[0]
+                col['value'] = res[0]
+                col['when'] = res[2]
+                col['done'] = res[1]
+                col['CID'] = column[0]
+                col['date'] = row[0]
+                if col['value'] != 'None':
+                    planning_row['values'].append(col)
+            except ValueError as e:
+                LOG.error(e)
+
+        # We highlight the current week.
+        if row[0] == current_week:
+            planning_row['color'] = colors[1]
+        else:
+            planning_row['color'] = colors[0]
+
+        # We add the row to our table.
+        planning.append(planning_row)
+
+    # Repackage: add headers and colors.
+    header = ['Week']
+    for column in columns:
+        header.append(column[1])
+    result = dict()
+    result['head'] = header
+    result['table'] = planning
+
+    return result
 
 
 if __name__ == '__main__':
-    app.run(host='172.16.1.23', port=1025, debug=False)
+    host = 'localhost'
+    port = 1025
+
+    # Create a QR code.
+    address = '{}:{}'.format(host, port)
+    filepath = os.path.join(ROOT, 'apps', 'static', 'qr.png')
+    big_code = pyqrcode.create(address, error='L', version=27, mode='binary')
+    big_code.png(filepath, scale=6, module_color='#000000', background=[0xff, 0xff, 0xcc])
+
+    # Start the app.
+    app.run(host=host, port=port, debug=True)

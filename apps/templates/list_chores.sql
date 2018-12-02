@@ -12,4 +12,4 @@ FROM (
         SELECT
             name as chore,
             CID FROM chores) as b
-        ON a.CID = b.CID
+        ON a.CID = b.CID;

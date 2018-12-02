@@ -18,4 +18,4 @@ FROM (
         UID
     FROM
         persons) as a
-    ON a.UID = B.UID
+    ON a.UID = B.UID;

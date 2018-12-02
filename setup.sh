@@ -5,7 +5,6 @@ mkdir -p database
 # Build and fill the database if it does not exist
 if [ ! -f $a/database/hub.db ]; then
     sqlite3 $a/database/hub.db < $a/scripts/setupDB.sql
-    sqlite3 $a/database/hub.db < $a/scripts/initializeDB.sql
     python $a/scripts/updatedb.py
 fi
 

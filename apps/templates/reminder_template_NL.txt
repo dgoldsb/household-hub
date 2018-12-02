@@ -1,0 +1,5 @@
+Hey {recipient},
+
+Vergeet niet dat je moet schoonmaken 🙂 Deze week moet je het volgende doen: {chore}.
+
+Cheers!

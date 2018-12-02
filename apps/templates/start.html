@@ -113,40 +113,9 @@
         {% endfor %}
         </tbody>
         </table>
-
-        <br><br>
-
-        <h1>Wall of shame</h1>
-
-        <table>
-        <thead><tr>
-            {% for head in offenders['head'] %}
-                <th>{{ head }}</th>
-            {% endfor %}
-        </tr></thead>
-        <tbody>
-        {% for row in offenders['table'] %}
-            <tr>
-            {% for column in row %}
-                <td>
-                    {{ column }}
-                </td>
-            {% endfor %}
-            </tr>
-        {% endfor %}
-        </tbody>
-        </table>
-
+        <img align="none" src="/static/qr.png" style="margin-bottom: 25px;margin-top: 25px;-ms-interpolation-mode: bicubic;border: 0;line-height: 100%;outline: none;text-decoration: none;">
         </center>
 
-        <br><br>
-
-        <center>
-        <form action="." method="POST">
-            <!--<button type="submit" name="goto" value="switch">Klusjes ruilen</button>-->
-            <button type="submit" name="goto" value="fill">Mark chores as done</button>
-        </form>
-        </center>
     <a href="https://www.github.com/dgoldsb/super-simple-scheduler">GitHub repository</a>
     </div>
     </center>
