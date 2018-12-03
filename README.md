@@ -19,6 +19,3 @@ Run the setup.sh procedure in the root directory to setup the database, add the 
 After reboot, the Flask server launches on startup.
 Add the email address, password, and admin email address (backups will be sent to this email) to the file `./scripts/config.csv`.
 Make sure that you added the IP of your Pi in the `app.py` script.
-
-I will work later on building a proper config file, if anyone takes interest in this, and to put the text of the webpage in a separate template to avoid essentially having the same HTML in three places.
-It is important to keep in mind that the admin, who will be CC'ed emails, is to have UID 1.
